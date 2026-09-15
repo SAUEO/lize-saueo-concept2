@@ -26,11 +26,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
       - name: Build website
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm run build
       - name: Upload static website
         uses: actions/upload-pages-artifact@v3
