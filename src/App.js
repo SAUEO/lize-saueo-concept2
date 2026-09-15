@@ -22,47 +22,62 @@ a{text-decoration:none;color:inherit;}
 .ph .bc{font-family:'Barlow',sans-serif;font-size:0.68rem;letter-spacing:0.1em;color:#C9A84C;margin-bottom:14px;text-transform:uppercase;}
 .ph h1{color:#fff;font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.15;position:relative;z-index:2;}
 .ph h1 em{color:#C9A84C;}
-@media(max-width:768px){.con{padding:0 22px;}.ph{padding:60px 22px 40px;}}
+.skip-link{position:absolute;left:16px;top:-48px;background:#C9A84C;color:#071429;padding:10px 16px;font-family:'Barlow',sans-serif;font-weight:700;z-index:2000;}
+.skip-link:focus{top:16px;}
+.nav-toggle{display:none;border:1px solid rgba(201,168,76,0.6);background:transparent;color:#C9A84C;padding:8px 11px;font-family:'Barlow',sans-serif;font-size:0.68rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;}
+@media(max-width:980px){
+  .nav-utility{padding:6px 22px!important;}
+  .nav-utility-copy{display:none;}
+  .nav-main{padding:14px 22px!important;}
+  .nav-toggle{display:block;}
+  .nav-links{display:none!important;position:absolute;top:100%;left:0;right:0;background:#071429;padding:10px 22px 22px;border-top:1px solid rgba(201,168,76,0.2);box-shadow:0 14px 28px rgba(7,20,41,0.28);}
+  .nav-links.open{display:flex!important;flex-direction:column;align-items:stretch;gap:0!important;}
+  .nav-links.open span{padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .nav-links.open button{margin-top:14px;}
+}
+@media(max-width:768px){.con{padding:0 22px;}.ph{padding:60px 22px 40px;}.nav-brand-sub{display:none;}}
 `;
 
 // NAV
 function Nav({ cur, go }) {
   const [sc, setSc] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
     const fn = () => setSc(window.scrollY > 40);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  useEffect(() => setMobileOpen(false), [cur]);
+
   const links = [
-    ["home","Home"],["about","About Us"],["team","Our Team"],
-    ["membership","Membership"],["newsroom","Newsroom"],
-    ["resourcehub","Resource Hub"],["shop","Shop"],["services","Services & Programmes"],
+    ["about","About"],["services","How We Support"],["membership","Membership"],
+    ["resourcehub","Resources"],["shop","Shop"],["newsroom","Employer Voice"],["partnerships","Partners"],
   ];
 
   return (
     <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:1000,background:sc||cur!=="home"?"#071429":"transparent",transition:"background 0.4s",borderBottom:sc?"1px solid rgba(201,168,76,0.2)":"none" }}>
-      <div style={{ background:"#C9A84C",padding:"6px 48px",display:"flex",justifyContent:"space-between",alignItems:"center" }}>
-        <span style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.68rem",fontWeight:600,color:"#071429" }}>
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <div className="nav-utility" style={{ background:"#C9A84C",padding:"6px 48px",display:"flex",justifyContent:"space-between",alignItems:"center" }}>
+        <span className="nav-utility-copy" style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.68rem",fontWeight:600,color:"#071429" }}>
           Mon–Fri: 07:30–16:30 &nbsp;|&nbsp; info@saueo.co.za &nbsp;|&nbsp; The organised voice of employers.
         </span>
         <div style={{ display:"flex",gap:14,alignItems:"center" }}>
-          {["Facebook","LinkedIn","YouTube"].map(s=>(
-            <span key={s} style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.65rem",fontWeight:700,color:"#071429",cursor:"pointer" }}>{s}</span>
-          ))}
+          <span style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.65rem",fontWeight:700,color:"#071429" }}>Public employer resources</span>
           <span onClick={()=>go("membership")} style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.65rem",fontWeight:800,background:"#071429",color:"#C9A84C",padding:"4px 14px",cursor:"pointer" }}>Join (SA)UEO</span>
         </div>
       </div>
-      <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 48px" }}>
-        <div onClick={()=>go("home")} style={{ cursor:"pointer" }}>
+      <div className="nav-main" style={{ display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 48px",position:"relative" }}>
+        <div onClick={()=>go("home")} style={{ cursor:"pointer",minWidth:0 }}>
           <div style={{ fontFamily:"'Playfair Display',serif",fontSize:"1.4rem",fontWeight:900,color:"#fff" }}>(SA)UEO</div>
-          <div style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.52rem",letterSpacing:"0.14em",color:"#C9A84C",textTransform:"uppercase",marginTop:2 }}>South African United Commercial & Allied Employers' Organisation</div>
+          <div className="nav-brand-sub" style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.52rem",letterSpacing:"0.14em",color:"#C9A84C",textTransform:"uppercase",marginTop:2 }}>South African United Commercial & Allied Employers' Organisation</div>
         </div>
-        <div style={{ display:"flex",gap:22,alignItems:"center" }}>
+        <button className="nav-toggle" aria-expanded={mobileOpen} aria-controls="primary-navigation" onClick={()=>setMobileOpen(open=>!open)}>{mobileOpen ? "Close" : "Menu"}</button>
+        <div id="primary-navigation" className={`nav-links${mobileOpen ? " open" : ""}`} style={{ display:"flex",gap:18,alignItems:"center" }}>
           {links.map(([id,label])=>(
             <span key={id} onClick={()=>go(id)} style={{ fontFamily:"'Barlow',sans-serif",fontSize:"0.7rem",fontWeight:600,letterSpacing:"0.06em",textTransform:"uppercase",color:cur===id?"#C9A84C":"#fff",cursor:"pointer",borderBottom:cur===id?"2px solid #C9A84C":"2px solid transparent",paddingBottom:2,transition:"color 0.2s" }}>{label}</span>
           ))}
-          <button className="btn-p" onClick={()=>go("contact")} style={{ fontSize:"0.66rem",padding:"9px 18px" }}>Contact Us</button>
+          <button className="btn-p" onClick={()=>go("contact")} style={{ fontSize:"0.66rem",padding:"9px 18px" }}>Get Help</button>
         </div>
       </div>
     </nav>
@@ -883,7 +898,7 @@ export default function App() {
     <>
       <style>{fonts + gs}</style>
       <Nav cur={page} go={go} />
-      <main style={{ paddingTop: page === "home" ? 0 : 108 }}>
+      <main id="main-content" tabIndex="-1" style={{ paddingTop: page === "home" ? 0 : 108 }}>
         {pages[page] || pages.home}
       </main>
       <Footer go={go} />
